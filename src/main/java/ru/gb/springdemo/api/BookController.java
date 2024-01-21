@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.gb.springdemo.model.Book;
 import ru.gb.springdemo.repository.BookRepository;
+import ru.gb.springdemo.service.BookService;
 
 import java.util.List;
 
@@ -12,11 +13,11 @@ import java.util.List;
 @RequestMapping("/book")
 public class BookController {
 
-    private BookRepository bookRepository;
+    private BookService bookService;
 
     @Autowired
-    public BookController(BookRepository bookRepository) {
-        this.bookRepository = bookRepository;
+    public BookController(BookService bookService) {
+        this.bookService = bookService;
     }
 
     /**
@@ -25,7 +26,7 @@ public class BookController {
      */
     @GetMapping
     public List<Book> getAllBooks() {
-        return bookRepository.getAllBooks();
+        return bookService.getAllBooks();
     }
 
     /**
@@ -35,7 +36,7 @@ public class BookController {
      */
     @GetMapping("/{id}")
     public Book getBookById(@PathVariable long id) {
-        return bookRepository.getBookById(id);
+        return bookService.getBookById(id);
     }
 
     /**
@@ -45,8 +46,8 @@ public class BookController {
      */
     @DeleteMapping("/{id}")
     public List<Book> deleteBookById(@PathVariable long id) {
-        bookRepository.deleteBookById(id);
-        return bookRepository.getAllBooks();
+        bookService.deleteBookById(id);
+        return bookService.getAllBooks();
     }
 
     /**
@@ -57,7 +58,7 @@ public class BookController {
     @PostMapping("/add/{name}")
     @ResponseStatus(HttpStatus.CREATED)
     public Book addBook(@PathVariable String name) {
-        bookRepository.addBook(new Book(name));
-        return bookRepository.getAllBooks().getLast();
+        bookService.addBook(new Book(name));
+        return bookService.getAllBooks().getLast();
     }
 }

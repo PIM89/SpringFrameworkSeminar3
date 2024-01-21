@@ -6,17 +6,18 @@ import org.springframework.web.bind.annotation.*;
 import ru.gb.springdemo.model.Book;
 import ru.gb.springdemo.model.Reader;
 import ru.gb.springdemo.repository.ReaderRepository;
+import ru.gb.springdemo.service.ReaderService;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/reader")
 public class ReaderController {
-    private ReaderRepository readerRepository;
+    private ReaderService readerService;
 
     @Autowired
-    public ReaderController(ReaderRepository readerRepository) {
-        this.readerRepository = readerRepository;
+    public ReaderController(ReaderService readerService) {
+        this.readerService = readerService;
     }
 
     /**
@@ -25,7 +26,7 @@ public class ReaderController {
      */
     @GetMapping
     public List<Reader> getReaders() {
-        return readerRepository.getAllReaders();
+        return readerService.getAllReaders();
     }
 
     /**
@@ -35,7 +36,7 @@ public class ReaderController {
      */
     @GetMapping("/{id}")
     public Reader getReaderById(@PathVariable long id) {
-        return readerRepository.getReaderById(id);
+        return readerService.getReaderById(id);
     }
 
     /**
@@ -45,8 +46,8 @@ public class ReaderController {
      */
     @DeleteMapping("/{id}")
     public List<Reader> deleteReaderById(@PathVariable long id) {
-        readerRepository.deleteReaderById(id);
-        return readerRepository.getAllReaders();
+        readerService.deleteReaderById(id);
+        return readerService.getAllReaders();
     }
 
     /**
@@ -57,7 +58,7 @@ public class ReaderController {
     @PostMapping("/add/{name}")
     @ResponseStatus(HttpStatus.CREATED)
     public Reader addReader(@PathVariable String name) {
-        readerRepository.addReader(new Reader(name));
-        return readerRepository.getAllReaders().getLast();
+        readerService.addReader(new Reader(name));
+        return readerService.getAllReaders().getLast();
     }
 }

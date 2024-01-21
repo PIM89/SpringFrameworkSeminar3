@@ -45,7 +45,8 @@ public class BookRepository {
         }
     }
 
-    public void addBook(Book book) {
+    public Book addBook(Book book) {
         books.add(book);
+        return book;
     }
 }

@@ -45,7 +45,8 @@ public class ReaderRepository {
         }
     }
 
-    public void addReader(Reader reader) {
+    public Reader addReader(Reader reader) {
         readers.add(reader);
+        return reader;
     }
 }
