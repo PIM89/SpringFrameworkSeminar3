@@ -7,6 +7,7 @@ import ru.gb.springdemo.model.Book;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Repository
 public class BookRepository {
@@ -20,9 +21,9 @@ public class BookRepository {
     @PostConstruct
     public void generateData() {
         books.addAll(List.of(
-                new Book("война и мир"),
-                new Book("метрвые души"),
-                new Book("чистый код")
+                new Book("Война и мир"),
+                new Book("Метрвые души"),
+                new Book("Чистый код")
         ));
     }
 
@@ -44,9 +45,20 @@ public class BookRepository {
             }
         }
     }
-
     public Book addBook(Book book) {
         books.add(book);
         return book;
+    }
+
+    public List<Book> getAvailableBooks(){
+        return books.stream().filter(Book::isOnStorage)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public String toString() {
+        return "BookRepository{" +
+                "books=" + books +
+                '}';
     }
 }

@@ -26,7 +26,6 @@ public class ReaderService {
     public void deleteReaderById(long id) {
         readerRepository.deleteReaderById(id);
     }
-
     public Reader addReader(Reader reader) {
         return readerRepository.addReader(reader);
     }

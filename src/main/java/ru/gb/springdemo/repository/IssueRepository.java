@@ -1,12 +1,12 @@
 package ru.gb.springdemo.repository;
 
-import lombok.Data;
 import org.springframework.stereotype.Repository;
 import ru.gb.springdemo.model.Issue;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Repository
 public class IssueRepository {
@@ -25,6 +25,13 @@ public class IssueRepository {
         return issues;
     }
 
+    public Issue getIssuesByIdBook(long id){
+        return issues.stream()
+                .filter(it -> it.getBookId() == id && it.getReturnTimestamp() == null)
+                .findFirst()
+                .orElse(null);
+    }
+
     public void returnBook(long id) {
         for (Issue issue : issues) {
             if (issue.getId() == id) {
@@ -33,4 +40,16 @@ public class IssueRepository {
             }
         }
     }
+
+    public List<Long> getListIdBookByReader(long id){
+        List<Long> idBooks = new ArrayList<>();
+        for (Issue issue : issues) {
+            if (issue.getReaderId() == id) {
+                idBooks.add(issue.getBookId());
+            }
+        }
+        return idBooks;
+    }
+
+
 }

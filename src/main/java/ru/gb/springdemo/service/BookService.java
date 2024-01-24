@@ -34,4 +34,8 @@ public class BookService {
         return  bookRepository.addBook(book);
     }
 
+    public List<Book> getAvailableBooks() {
+        return bookRepository.getAvailableBooks();
+    }
+
 }

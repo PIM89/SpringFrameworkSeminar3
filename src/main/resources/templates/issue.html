@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/style.css">
+    <title>Список выданных книг</title>
+</head>
+<body>
+    <h2>Список выданных книг</h2>
+    <br />
+    <table>
+        <tr>
+            <th>Название книги</th>
+            <th>Имя читателя</th>
+            <th>Дата получения</th>
+            <th>Дата возврата</th>
+        </tr>
+        <tr th:each="issue : ${issues}">
+            <td th:text="${books.getBookById(issue.getBookId()).getName()}"></td>
+            <td th:text="${readers.getReaderById(issue.getReaderId()).getName()}"></td>
+            <td th:text="${issue.getIssueTimestamp()}"></td>
+            <td th:text="${issue.getReturnTimestamp()}"></td>
+
+        </tr>
+    </table>
+
+    
+</body>
+</html>

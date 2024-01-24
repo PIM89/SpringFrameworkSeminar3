@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/style.css">
+    <title>Читатели</title>
+</head>
+
+<body>
+    <h2>Информация о читателе</h2>
+    <br />
+    <h3>Имя читателя: <span th:text="${reader.getName()}"></span></h3>
+    <h3>Идентификатор читателя: <span th:text="${reader.getId()}"></span></h3>
+    <br />
+    <h3>Информация о книгах, находящихся у читателя</h3>
+    <table>
+        <tr>
+            <th>id</th>
+            <th>Название книги</th>
+            <th>Дата получения</th>
+        </tr>
+        <tr th:each="book : ${books}">
+            <td th:text="${book.key.getId()}"></td>
+            <td th:text="${book.key.getName()}"></td>
+            <td th:text="${book.value.getIssueTimestamp()}"></td>
+        </tr>
+    </table>
+</body>
+
+</html>

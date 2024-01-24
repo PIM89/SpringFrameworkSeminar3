@@ -12,8 +12,7 @@ import ru.gb.springdemo.repository.BookRepository;
 import ru.gb.springdemo.repository.IssueRepository;
 import ru.gb.springdemo.repository.ReaderRepository;
 
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -91,4 +90,25 @@ public class IssuerService {
         return bookRepository.getBookById(bookId);
     }
 
+//    public List<Book> getListBookByReader(long idReader) {
+//        List<Long> idListBookByReader = issueRepository.getListIdBookByReader(idReader);
+//        List<Book> bookList = new ArrayList<>();
+//        for (Long l : idListBookByReader) {
+//            if (!bookRepository.getBookById(l).isOnStorage()){
+//                bookList.add(bookRepository.getBookById(l));
+//            }
+//        }
+//        return bookList;
+//    }
+
+    public Map<Book, Issue> getListBookByReader(long idReader) {
+        List<Long> idListBookByReader = issueRepository.getListIdBookByReader(idReader);
+        Map<Book, Issue> bookIssueMap = new HashMap<>();
+        for (Long l : idListBookByReader) {
+            if (!bookRepository.getBookById(l).isOnStorage()){
+                bookIssueMap.put(bookRepository.getBookById(l), issueRepository.getIssuesByIdBook(l));
+            }
+        }
+        return bookIssueMap;
+    }
 }

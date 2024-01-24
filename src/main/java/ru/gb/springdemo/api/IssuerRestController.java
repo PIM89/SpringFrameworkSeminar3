@@ -15,11 +15,11 @@ import java.util.NoSuchElementException;
 @Slf4j
 @RestController
 @RequestMapping("/issue")
-public class IssuerController {
+public class IssuerRestController {
     private IssuerService issuerService;
 
     @Autowired
-    public IssuerController(IssuerService issuerService) {
+    public IssuerRestController(IssuerService issuerService) {
         this.issuerService = issuerService;
     }
 

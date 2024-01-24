@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/style.css">
+    <title>Список доступных книг</title>
+</head>
+
+<body>
+    <h2>Список книг доступных для получения</h2>
+    <br />
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Название книги</th>
+        </tr>
+        <tr th:each="book: ${books}">
+            <td th:text="${book.getId()}"></td>
+            <td th:text="${book.getName()}"></td>
+        </tr>
+
+    </table>
+
+</body>
+
+</html>
