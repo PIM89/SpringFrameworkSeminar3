@@ -11,8 +11,8 @@
 <body>
     <h2>Информация о читателе</h2>
     <br />
-    <h3>Имя читателя: <span th:text="${reader.getName()}"></span></h3>
-    <h3>Идентификатор читателя: <span th:text="${reader.getId()}"></span></h3>
+    <h3>Имя читателя: <span th:text="${reader.get().getName()}"></span></h3>
+    <h3>Идентификатор читателя: <span th:text="${reader.get().getId()}"></span></h3>
     <br />
     <h3>Информация о книгах, находящихся у читателя</h3>
     <table>
@@ -21,10 +21,10 @@
             <th>Название книги</th>
             <th>Дата получения</th>
         </tr>
-        <tr th:each="book : ${books}">
-            <td th:text="${book.key.getId()}"></td>
-            <td th:text="${book.key.getName()}"></td>
-            <td th:text="${book.value.getIssueTimestamp()}"></td>
+        <tr th:each="issue : ${issues}">
+            <td th:text="${issue.getBook().getId()}"></td>
+            <td th:text="${issue.getBook().getName()}"></td>
+            <td th:text="${issue.getIssueTimestamp()}"></td>
         </tr>
     </table>
 </body>

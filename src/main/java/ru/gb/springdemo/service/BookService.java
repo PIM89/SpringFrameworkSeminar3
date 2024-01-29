@@ -1,6 +1,7 @@
 package ru.gb.springdemo.service;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.gb.springdemo.model.Book;
@@ -10,6 +11,7 @@ import java.util.List;
 
 @Service
 @Data
+@NoArgsConstructor
 public class BookService {
     private BookRepository bookRepository;
 
@@ -18,24 +20,20 @@ public class BookService {
         this.bookRepository = bookRepository;
     }
 
-    public List<Book> getAllBooks(){
-        return bookRepository.getAllBooks();
+    public List<Book> findAll() {
+        return bookRepository.findAll();
     }
 
-    public Book getBookById(long id){
-        return bookRepository.getBookById(id);
+    public Book findById(Long id) {
+        return bookRepository.findById(id).get();
     }
 
-    public void deleteBookById(long id){
-        bookRepository.deleteBookById(id);
+    public void deleteById(Long id) {
+        bookRepository.deleteById(id);
     }
 
-    public Book addBook(Book book){
-        return  bookRepository.addBook(book);
+    public Book saveBook(Book book) {
+        bookRepository.save(book);
+        return book;
     }
-
-    public List<Book> getAvailableBooks() {
-        return bookRepository.getAvailableBooks();
-    }
-
 }

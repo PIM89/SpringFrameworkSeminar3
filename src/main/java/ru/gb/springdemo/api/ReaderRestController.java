@@ -24,7 +24,7 @@ public class ReaderRestController {
      */
     @GetMapping
     public List<Reader> getReaders() {
-        return readerService.getAllReaders();
+        return readerService.findAll();
     }
 
     /**
@@ -34,7 +34,7 @@ public class ReaderRestController {
      */
     @GetMapping("/{id}")
     public Reader getReaderById(@PathVariable long id) {
-        return readerService.getReaderById(id);
+        return readerService.findById(id);
     }
 
     /**
@@ -44,8 +44,8 @@ public class ReaderRestController {
      */
     @DeleteMapping("/{id}")
     public List<Reader> deleteReaderById(@PathVariable long id) {
-        readerService.deleteReaderById(id);
-        return readerService.getAllReaders();
+        readerService.deleteById(id);
+        return readerService.findAll();
     }
 
     /**
@@ -56,7 +56,8 @@ public class ReaderRestController {
     @PostMapping("/add/{name}")
     @ResponseStatus(HttpStatus.CREATED)
     public Reader addReader(@PathVariable String name) {
-        readerService.addReader(new Reader(name));
-        return readerService.getAllReaders().getLast();
+        Reader reader = new Reader(name);
+        readerService.saveReader(reader);
+        return reader;
     }
 }

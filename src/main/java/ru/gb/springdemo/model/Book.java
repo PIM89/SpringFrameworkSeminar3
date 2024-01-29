@@ -1,20 +1,30 @@
 package ru.gb.springdemo.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 
+
+@Entity
+@Table(name = "books")
+@NoArgsConstructor
 @Data
+@JsonIgnoreProperties({"issue"})
 public class Book {
-    private static long sequence = 1L;
-    private final long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @Column(name = "name")
     private String name;
-    private boolean onStorage;
+    @Column(name = "storage")
+    private Boolean onStorage = true;
+    @OneToOne(mappedBy = "book")
+    private Issue issue;
 
     public Book(String name) {
         this.name = name;
-        this.onStorage = true;
-        this.id = sequence++;
     }
 }

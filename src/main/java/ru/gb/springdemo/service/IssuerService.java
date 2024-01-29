@@ -1,114 +1,100 @@
 package ru.gb.springdemo.service;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.gb.springdemo.api.IssueRequest;
 import ru.gb.springdemo.model.Book;
 import ru.gb.springdemo.model.Issue;
+import ru.gb.springdemo.model.Reader;
 import ru.gb.springdemo.repository.BookRepository;
-import ru.gb.springdemo.repository.IssueRepository;
+import ru.gb.springdemo.repository.IssuerRepository;
 import ru.gb.springdemo.repository.ReaderRepository;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
-@Slf4j
 @Service
-@RequiredArgsConstructor
 @Data
+@NoArgsConstructor
 public class IssuerService {
-    // спринг это все заинжектит
-    private final BookRepository bookRepository;
-    private final ReaderRepository readerRepository;
-    private final IssueRepository issueRepository;
+    private BookRepository bookRepository;
+    private ReaderRepository readerRepository;
+    private IssuerRepository issuerRepository;
     @Value("${application.max-allowed-books:1}")
-    private int maxAllowedBooks;
+    private Integer maxAllowedBooks;
 
-    public List<Issue> getAllIssue() {
-        return List.copyOf(issueRepository.getIssues());
+    @Autowired
+    IssuerService(BookRepository bookRepository, ReaderRepository readerRepository, IssuerRepository issuerRepository) {
+        this.bookRepository = bookRepository;
+        this.readerRepository = readerRepository;
+        this.issuerRepository = issuerRepository;
     }
 
-    public Issue getIssueById(long id) {
-        return issueRepository.getIssues().stream().filter(it -> it.getId() == id).findFirst().orElse(null);
+    public List<Issue> findAll() {
+        return issuerRepository.findAll();
     }
 
-    // Выдача книги читателю
-    public Issue issue(IssueRequest issueRequest) {
-        log.info("Лимит выдачи книг на руки составляет {}", maxAllowedBooks);
-        if (bookRepository.getBookById(issueRequest.getBookId()) == null) {
-            throw new NoSuchElementException("Не найдена книга с id \"" + issueRequest.getBookId() + "\"");
-        }
+    public Issue findIssueById(Long id) {
+        return issuerRepository.findById(id).get();
+    }
 
-        if (!bookRepository.getBookById(issueRequest.getBookId()).isOnStorage()) {
-            throw new NoSuchElementException("Книга с id \"" + issueRequest.getBookId() + "\" на выдаче");
-        }
+    public List<Issue> findAllByIssueTimestampNotNull(){
+        return issuerRepository.findAllByIssueTimestampNotNull();
+    }
 
-        if (readerRepository.getReaderById(issueRequest.getReaderId()) == null) {
-            throw new NoSuchElementException("Не найден читатель с id \"" + issueRequest.getReaderId() + "\"");
-        }
 
-        if (readerRepository.getReaderById(issueRequest.getReaderId()).getCountBooks() >= maxAllowedBooks) {
+    public Issue issuance(IssueRequest issueRequest) {
+        Optional<Book> currentBook = bookRepository.findById(issueRequest.getBookId());
+        Optional<Reader> currentReader = readerRepository.findById(issueRequest.getReaderId());
+
+        if (currentBook.isEmpty()) {
+            throw new NullPointerException("Не найдена книга с id \"" + issueRequest.getBookId() + "\"");
+        }
+        if (!currentBook.get().getOnStorage()) {
+            throw new NullPointerException("Книга с id \"" + issueRequest.getBookId() + "\" на выдаче");
+        }
+        if (currentReader.isEmpty()) {
+            throw new NullPointerException("Не найден читатель с id \"" + issueRequest.getReaderId() + "\"");
+        }
+        if (currentReader.get().getCountBooks() >= maxAllowedBooks) {
             throw new NoSuchElementException("Превышен максимальный лимит книг на выдачу читателю с id \"" + issueRequest.getReaderId() + "\"");
         }
-
-        Issue issue = new Issue(issueRequest.getBookId(), issueRequest.getReaderId());
-
-        int countBook = readerRepository.getReaderById(issueRequest.getReaderId()).getCountBooks();
-        readerRepository.getReaderById(issueRequest.getReaderId()).setCountBooks(countBook + 1);
-
-        bookRepository.getBookById(issueRequest.getBookId()).setOnStorage(false);
-
-        issueRepository.save(issue);
+        Issue issue = new Issue(currentBook.get(), currentReader.get());
+        currentReader.get().setCountBooks(currentReader.get().getCountBooks() + 1);
+        currentBook.get().setOnStorage(false);
+        issuerRepository.save(issue);
         return issue;
     }
 
-    // Возврат книги в библиотеку
-    public Book returnBook(long bookId) {
+    public Book returnBook(Long bookId) {
+        Optional<Book> currentBook = bookRepository.findById(bookId);
+        Optional<Issue> currentIssue = issuerRepository.findIssueByBookId(bookId);
+        Optional<Reader> currentReader = readerRepository.findById(currentIssue.get().getReader().getId());
 
-        if (bookRepository.getBookById(bookId) == null) {
-            throw new NoSuchElementException("Не найдена книга с id \"" + bookId + "\"");
+        if (currentBook.isEmpty()) {
+            throw new NullPointerException("Не найдена книга с id \"" + bookId + "\"");
         }
-        if (bookRepository.getBookById(bookId).isOnStorage()) {
-            throw new NoSuchElementException("Книга с id \"" + bookId + "\" не выдавалась");
+        if (currentBook.get().getOnStorage()) {
+            throw new NoSuchElementException("Книга с id \"" + bookId + "\" не выдавалась!");
         }
 
-        Issue currentIssue = issueRepository.getIssues().stream()
-                .filter(it -> it.getBookId() == bookId)
-                .findFirst()
-                .orElse(null);
+        currentIssue.get().setReturnTimestamp(LocalDateTime.now());
+        issuerRepository.save(currentIssue.get());
 
-        long currentReaderId = currentIssue.getReaderId();
+        currentBook.get().setOnStorage(true);
+        bookRepository.save(currentBook.get());
 
-        issueRepository.returnBook(bookId);
-
-        int countBook = readerRepository.getReaderById(currentReaderId).getCountBooks();
-        readerRepository.getReaderById(currentReaderId).setCountBooks(countBook - 1);
-
-        bookRepository.getBookById(bookId).setOnStorage(true);
-        return bookRepository.getBookById(bookId);
+        currentReader.get().setCountBooks(currentReader.get().getCountBooks() - 1);
+        readerRepository.save(currentReader.get());
+        return currentBook.get();
     }
 
-//    public List<Book> getListBookByReader(long idReader) {
-//        List<Long> idListBookByReader = issueRepository.getListIdBookByReader(idReader);
-//        List<Book> bookList = new ArrayList<>();
-//        for (Long l : idListBookByReader) {
-//            if (!bookRepository.getBookById(l).isOnStorage()){
-//                bookList.add(bookRepository.getBookById(l));
-//            }
-//        }
-//        return bookList;
-//    }
-
-    public Map<Book, Issue> getListBookByReader(long idReader) {
-        List<Long> idListBookByReader = issueRepository.getListIdBookByReader(idReader);
-        Map<Book, Issue> bookIssueMap = new HashMap<>();
-        for (Long l : idListBookByReader) {
-            if (!bookRepository.getBookById(l).isOnStorage()){
-                bookIssueMap.put(bookRepository.getBookById(l), issueRepository.getIssuesByIdBook(l));
-            }
-        }
-        return bookIssueMap;
+    public List<Issue> getListBookByReader(long idReader) {
+        return issuerRepository.findAllIssueByReaderIdAndIssueTimestampNotNull(idReader);
     }
 }

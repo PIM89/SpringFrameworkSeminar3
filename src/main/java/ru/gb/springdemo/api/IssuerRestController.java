@@ -24,40 +24,44 @@ public class IssuerRestController {
     }
 
     @PostMapping
-    public ResponseEntity<Issue> issueBook(@RequestBody IssueRequest request) {
+    public ResponseEntity<Issue> issuance(@RequestBody IssueRequest request) {
         log.info("Получен запрос на выдачу: readerId = {}, bookId = {}", request.getReaderId(), request.getBookId());
-
         final Issue issue;
-
         try {
-            issue = issuerService.issue(request);
-        } catch (NoSuchElementException e) {
-            log.info("Кгига(id{}) не выдана читателю(id={})", request.getBookId(), request.getReaderId());
+            issue = issuerService.issuance(request);
+        } catch (Exception e) {
+            log.info("{}", e.getMessage());
+            log.info("Кгига (id={}) не выдана читателю (id={})", request.getBookId(), request.getReaderId());
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.status(HttpStatus.CONFLICT).body(issue);
     }
 
     @GetMapping()
-    public List<Issue> getAllIssue() {
-        return issuerService.getAllIssue();
+    public ResponseEntity<List<Issue>> getAllIssue() {
+        try {
+            List<Issue> issues = issuerService.findAll();
+            return ResponseEntity.status(HttpStatus.FOUND).body(issues);
+        } catch (Exception e){
+            log.info("{}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        }
     }
 
     @GetMapping("/{id}")
     public Issue getIssueById(@PathVariable long id) {
-        return issuerService.getIssueById(id);
+        return issuerService.findIssueById(id);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Book> returnBook (@PathVariable long id) {
         log.info("Получен запрос на возврат книги с id={}", id);
-        Book book = issuerService.getBookRepository().getBookById(id);
         try {
-            book = issuerService.returnBook(id);
-        } catch (NoSuchElementException e) {
+            return ResponseEntity.ok(issuerService.returnBook(id));
+        } catch (Exception e) {
             log.info("Ошибка при возврате книги с id={}", id);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(book);
+            log.info("{}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(book);
     }
 }

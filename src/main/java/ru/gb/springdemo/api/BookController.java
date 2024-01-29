@@ -22,7 +22,7 @@ public class BookController {
 
     @GetMapping("/books")
     public String getAvailableBooks(Model model) {
-        List<Book> books = bookService.getAvailableBooks();
+        List<Book> books = bookService.getBookRepository().findAllByOnStorage(true);
         model.addAttribute("books", books);
         return "book";
     }

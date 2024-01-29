@@ -22,7 +22,7 @@ public class ReaderController {
 
     @GetMapping("/readers")
     public String getAllReaders(Model model){
-        List<Reader> readers = readerService.getAllReaders();
+        List<Reader> readers = readerService.findAll();
         model.addAttribute("readers", readers);
         return "reader";
     }

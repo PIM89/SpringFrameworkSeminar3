@@ -1,26 +1,36 @@
 package ru.gb.springdemo.model;
 
+
+import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-/**
- * Запись о факте выдачи книги (в БД)
- */
+@Entity
+@NoArgsConstructor
 @Data
 public class Issue {
-  private static long sequence = 1L;
-  private final long id;
-  private final long bookId;
-  private final long readerId;
-  private final LocalDateTime issueTimestamp;
-  private LocalDateTime returnTimestamp;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-  public Issue(long bookId, long readerId) {
-    this.id = sequence++;
-    this.bookId = bookId;
-    this.readerId = readerId;
-    this.issueTimestamp = LocalDateTime.now();
-    this.returnTimestamp = null;
-  }
+    @OneToOne (cascade = CascadeType.ALL)
+    @JoinColumn(name = "book_id", referencedColumnName = "id")
+    private Book book;
+
+    @OneToOne (cascade = CascadeType.ALL)
+    @JoinColumn(name = "reader_id", referencedColumnName = "id")
+    private Reader reader;
+
+    @Column(name = "issue_time")
+    private LocalDateTime issueTimestamp = LocalDateTime.now();
+
+    @Column(name = "return_time")
+    private LocalDateTime returnTimestamp = null;
+
+    public Issue(Book book, Reader reader) {
+        this.book = book;
+        this.reader = reader;
+    }
 }
