@@ -1,5 +1,7 @@
 package ru.gb.springdemo.api;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,6 +17,7 @@ import java.util.NoSuchElementException;
 @Slf4j
 @RestController
 @RequestMapping("/issue")
+@Tag(name = "Issue")
 public class IssuerRestController {
     private IssuerService issuerService;
 
@@ -24,6 +27,7 @@ public class IssuerRestController {
     }
 
     @PostMapping
+    @Operation(summary = "Handing out a book to a reader", description = "Операция по выдаче книги на руки читателю")
     public ResponseEntity<Issue> issuance(@RequestBody IssueRequest request) {
         log.info("Получен запрос на выдачу: readerId = {}, bookId = {}", request.getReaderId(), request.getBookId());
         final Issue issue;
@@ -38,6 +42,7 @@ public class IssuerRestController {
     }
 
     @GetMapping()
+    @Operation(summary = "Get all issue", description = "Возвращает список всех имеющихся операций по выдаче книг читателям")
     public ResponseEntity<List<Issue>> getAllIssue() {
         try {
             List<Issue> issues = issuerService.findAll();
@@ -49,11 +54,13 @@ public class IssuerRestController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Get issue by ID", description = "Возвращает информацию об операции (выдача книги) по идентификатору")
     public Issue getIssueById(@PathVariable long id) {
         return issuerService.findIssueById(id);
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Return book", description = "Операция по возврату книги от читателя в библиотеку")
     public ResponseEntity<Book> returnBook (@PathVariable long id) {
         log.info("Получен запрос на возврат книги с id={}", id);
         try {

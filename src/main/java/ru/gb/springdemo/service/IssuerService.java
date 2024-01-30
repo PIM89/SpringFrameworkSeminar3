@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.gb.springdemo.api.IssueRequest;
 import ru.gb.springdemo.model.Book;
 import ru.gb.springdemo.model.Issue;
@@ -48,6 +49,7 @@ public class IssuerService {
     }
 
 
+    @Transactional
     public Issue issuance(IssueRequest issueRequest) {
         Optional<Book> currentBook = bookRepository.findById(issueRequest.getBookId());
         Optional<Reader> currentReader = readerRepository.findById(issueRequest.getReaderId());
@@ -71,6 +73,7 @@ public class IssuerService {
         return issue;
     }
 
+    @Transactional
     public Book returnBook(Long bookId) {
         Optional<Book> currentBook = bookRepository.findById(bookId);
         Optional<Issue> currentIssue = issuerRepository.findIssueByBookId(bookId);
