@@ -1,14 +1,11 @@
 package ru.gb.springdemo;
 
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ConfigurableApplicationContext;
-import ru.gb.springdemo.model.Book;
-import ru.gb.springdemo.repository.BookRepository;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 
-@SpringBootApplication
-@Slf4j
+@SpringBootApplication()
 public class Application {
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);

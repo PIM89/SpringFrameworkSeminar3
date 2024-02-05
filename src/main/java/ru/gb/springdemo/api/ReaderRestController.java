@@ -3,6 +3,7 @@ package ru.gb.springdemo.api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.gb.springdemo.model.Reader;
@@ -13,6 +14,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/reader")
 @Tag(name = "Reader")
+@ComponentScan
 public class ReaderRestController {
     private ReaderService readerService;
 
