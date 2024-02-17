@@ -38,30 +38,31 @@ public class IssuerRestController {
             log.info("Кгига (id={}) не выдана читателю (id={})", request.getBookId(), request.getReaderId());
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(issue);
+        return ResponseEntity.status(HttpStatus.CREATED).body(issue);
     }
 
     @GetMapping()
     @Operation(summary = "Get all issue", description = "Возвращает список всех имеющихся операций по выдаче книг читателям")
     public ResponseEntity<List<Issue>> getAllIssue() {
-        try {
-            List<Issue> issues = issuerService.findAll();
+        List<Issue> issues = issuerService.findAll();
+        if (!issues.isEmpty()) {
             return ResponseEntity.status(HttpStatus.FOUND).body(issues);
-        } catch (Exception e){
-            log.info("{}", e.getMessage());
+        } else {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         }
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Get issue by ID", description = "Возвращает информацию об операции (выдача книги) по идентификатору")
-    public Issue getIssueById(@PathVariable long id) {
-        return issuerService.findIssueById(id);
+    public ResponseEntity<Issue> getIssueById(@PathVariable long id) {
+        return issuerService.findIssueById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Return book", description = "Операция по возврату книги от читателя в библиотеку")
-    public ResponseEntity<Book> returnBook (@PathVariable long id) {
+    public ResponseEntity<Book> returnBook(@PathVariable long id) {
         log.info("Получен запрос на возврат книги с id={}", id);
         try {
             return ResponseEntity.ok(issuerService.returnBook(id));

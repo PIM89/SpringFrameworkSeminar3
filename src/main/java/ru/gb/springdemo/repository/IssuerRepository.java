@@ -9,6 +9,5 @@ import java.util.Optional;
 public interface IssuerRepository extends JpaRepository<Issue, Long> {
     Optional<Issue> findIssueByBookId(Long id);
     List<Issue> findAllIssueByReaderIdAndIssueTimestampNotNull(Long id);
-
     List<Issue> findAllByIssueTimestampNotNull();
 }

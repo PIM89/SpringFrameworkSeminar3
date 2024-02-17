@@ -7,6 +7,7 @@ import ru.gb.springdemo.model.Reader;
 import ru.gb.springdemo.repository.ReaderRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Data
@@ -18,19 +19,19 @@ public class ReaderService {
         this.readerRepository = readerRepository;
     }
 
-    public List<Reader> findAll(){
+    public List<Reader> findAll() {
         return readerRepository.findAll();
     }
 
-    public Reader findById(Long id){
-        return readerRepository.findById(id).get();
+    public Optional<Reader> findById(Long id) {
+        return readerRepository.findById(id);
     }
 
-    public void deleteById (Long id){
+    public void deleteById(Long id) {
         readerRepository.deleteById(id);
     }
-    public Reader saveReader(Reader reader){
-        readerRepository.save(reader);
-        return reader;
+
+    public Reader saveReader(Reader reader) {
+        return readerRepository.save(reader);
     }
 }

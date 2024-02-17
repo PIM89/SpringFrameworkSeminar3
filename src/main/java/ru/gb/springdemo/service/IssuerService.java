@@ -40,8 +40,8 @@ public class IssuerService {
         return issuerRepository.findAll();
     }
 
-    public Issue findIssueById(Long id) {
-        return issuerRepository.findById(id).get();
+    public Optional<Issue> findIssueById(Long id) {
+        return issuerRepository.findById(id);
     }
 
     public List<Issue> findAllByIssueTimestampNotNull(){

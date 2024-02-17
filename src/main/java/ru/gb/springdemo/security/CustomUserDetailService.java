@@ -1,4 +1,4 @@
-package ru.gb.springdemo.Security;
+package ru.gb.springdemo.security;
 
 
 import jakarta.annotation.PostConstruct;
